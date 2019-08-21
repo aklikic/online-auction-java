@@ -3,7 +3,7 @@ package controllers;
 import com.example.auction.user.api.UserLogin;
 import com.example.auction.user.api.UserRegistration;
 import com.example.auction.user.api.UserService;
-import play.Configuration;
+import com.typesafe.config.Config;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -17,14 +17,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class UserController extends AbstractController {
-
     private final UserService userService;
     private final FormFactory formFactory;
     private HttpExecutionContext httpExecutionContext;
     private final Boolean showInlineInstruction;
 
     @Inject
-    public UserController(Configuration config, MessagesApi messagesApi, UserService userService, FormFactory formFactory, HttpExecutionContext httpExecutionContext) {
+    public UserController(Config config, MessagesApi messagesApi, UserService userService, FormFactory formFactory, HttpExecutionContext httpExecutionContext) {
         super(messagesApi, userService);
         this.userService = userService;
         this.formFactory = formFactory;

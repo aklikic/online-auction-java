@@ -1,8 +1,19 @@
+import com.lightbend.lagom.core.LagomVersion
 organization in ThisBuild := "com.example"
 
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.8"
 
-EclipseKeys.projectFlavor in Global := EclipseProjectFlavor.Java
+//val akkaManagementVersion = "1.0.0"
+//val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
+//val lagomJavadslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % LagomVersion.current
+
+val lombok = "org.projectlombok" % "lombok" % "1.18.8"
+val cassandraExtras = "com.datastax.cassandra" % "cassandra-driver-extras" % "3.0.0"
+
+val ocpSoftPrettyTime = "org.ocpsoft.prettytime" % "prettytime" % "3.2.7.Final"
+val webJarsFoundation = "org.webjars" % "foundation" % "6.2.3"
+val webJarsFoundationIconFonts = "org.webjars" % "foundation-icon-fonts" % "d596a3cfb3"
+val jBCrypt = "de.svenkubiak" % "jBCrypt" % "0.4"
 
 
 lazy val root = (project in file("."))
@@ -20,7 +31,7 @@ lazy val root = (project in file("."))
 lazy val security = (project in file("security"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lagomJavadslServer % Optional
@@ -31,7 +42,7 @@ lazy val security = (project in file("security"))
 lazy val testkit = (project in file("testkit"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lagomJavadslPersistenceCassandra
@@ -42,7 +53,7 @@ lazy val testkit = (project in file("testkit"))
 lazy val itemApi = (project in file("item-api"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -52,17 +63,19 @@ lazy val itemApi = (project in file("item-api"))
 
 lazy val itemImpl = (project in file("item-impl"))
   .settings(commonSettings)
-  .enablePlugins(LagomJava, SbtReactiveAppPlugin)
+  .enablePlugins(LagomJava)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
       lagomJavadslTestKit,
       lagomJavadslKafkaBroker,
-      cassandraExtras
+      cassandraExtras/*,
+      lagomJavadslAkkaDiscovery,
+      akkaDiscoveryKubernetesApi*/
     )
   )
-  .settings(lagomForkedTestSettings: _*)
+  //.settings(lagomForkedTestSettings: _*)
   .dependsOn(
     tools,
     testkit % "test",
@@ -73,7 +86,7 @@ lazy val itemImpl = (project in file("item-impl"))
 lazy val biddingApi = (project in file("bidding-api"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -83,14 +96,16 @@ lazy val biddingApi = (project in file("bidding-api"))
 
 lazy val biddingImpl = (project in file("bidding-impl"))
   .settings(commonSettings)
-  .enablePlugins(LagomJava, SbtReactiveAppPlugin)
+  .enablePlugins(LagomJava)
   .dependsOn(biddingApi, itemApi)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
       lagomJavadslTestKit,
-      lagomJavadslKafkaBroker
+      lagomJavadslKafkaBroker/*,
+      lagomJavadslAkkaDiscovery,
+      akkaDiscoveryKubernetesApi*/
     ),
     maxErrors := 10000
 
@@ -99,7 +114,7 @@ lazy val biddingImpl = (project in file("bidding-impl"))
 lazy val searchApi = (project in file("search-api"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -109,13 +124,15 @@ lazy val searchApi = (project in file("search-api"))
 
 lazy val searchImpl = (project in file("search-impl"))
   .settings(commonSettings)
-  .enablePlugins(LagomJava, SbtReactiveAppPlugin)
+  .enablePlugins(LagomJava)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslTestKit,
       lagomJavadslKafkaClient,
-      lombok
+      lombok/*,
+      lagomJavadslAkkaDiscovery,
+      akkaDiscoveryKubernetesApi*/
     ),
     testOptions in Test += Tests.Argument(TestFrameworks.JUnit, elasticsearch)
   )
@@ -124,7 +141,7 @@ lazy val searchImpl = (project in file("search-impl"))
 lazy val tools = (project in file("tools"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -135,7 +152,7 @@ lazy val tools = (project in file("tools"))
 lazy val transactionApi = (project in file("transaction-api"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -145,26 +162,28 @@ lazy val transactionApi = (project in file("transaction-api"))
 
 lazy val transactionImpl = (project in file("transaction-impl"))
   .settings(commonSettings)
-  .enablePlugins(LagomJava, SbtReactiveAppPlugin)
+  .enablePlugins(LagomJava)
   .dependsOn(
     transactionApi,
     itemApi,
     tools,
     testkit % "test"
   ).settings(
-  version := "1.0-SNAPSHOT",
+  version := "1.0.0-SNAPSHOT",
   libraryDependencies ++= Seq(
     lagomJavadslPersistenceCassandra,
     lagomJavadslTestKit,
     lagomJavadslKafkaBroker,
-    cassandraExtras
+    cassandraExtras/*,
+    lagomJavadslAkkaDiscovery,
+    akkaDiscoveryKubernetesApi*/
   )
 )
 
 lazy val userApi = (project in file("user-api"))
   .settings(commonSettings)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
@@ -174,47 +193,45 @@ lazy val userApi = (project in file("user-api"))
 
 lazy val userImpl = (project in file("user-impl"))
   .settings(commonSettings)
-  .enablePlugins(LagomJava, SbtReactiveAppPlugin)
+  .enablePlugins(LagomJava)
   .dependsOn(userApi, tools,
     testkit % "test"
   )
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
       lagomJavadslTestKit,
-      "de.svenkubiak" % "jBCrypt" % "0.4",
+      jBCrypt,
       lagomJavadslKafkaBroker,
       cassandraExtras,
-      lombok
+      lombok/*,
+      lagomJavadslAkkaDiscovery,
+      akkaDiscoveryKubernetesApi*/
     )
   )
 
 lazy val webGateway = (project in file("web-gateway"))
   .settings(commonSettings)
-  .enablePlugins(PlayJava, LagomPlay, SbtReactiveAppPlugin)
+  .enablePlugins(PlayJava, LagomPlay)
   .disablePlugins(PlayLayoutPlugin) // use the standard sbt layout... src/main/java, etc.
   .dependsOn(tools, transactionApi, biddingApi, itemApi, searchApi, userApi, searchApi)
   .settings(
-    version := "1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslClient,
-      "org.ocpsoft.prettytime" % "prettytime" % "3.2.7.Final",
-      "org.webjars" % "foundation" % "6.2.3",
-      "org.webjars" % "foundation-icon-fonts" % "d596a3cfb3"
+       ocpSoftPrettyTime ,
+       webJarsFoundation ,
+       webJarsFoundationIconFonts /*,
+       lagomJavadslAkkaDiscovery,
+       akkaDiscoveryKubernetesApi*/
     ),
 
     PlayKeys.playMonitoredFiles ++= (sourceDirectories in (Compile, TwirlKeys.compileTemplates)).value,
 
-    // Workaround for https://github.com/lagom/online-auction-java/issues/22
-    // Uncomment the commented out line and remove the Scala line when issue #22 is fixed
-    EclipseKeys.projectFlavor in Global := EclipseProjectFlavor.ScalaIDE,
-    // EclipseKeys.createSrc := EclipseCreateSrc.ValueSet(EclipseCreateSrc.ManagedClasses, EclipseCreateSrc.ManagedResources)
-    EclipseKeys.preTasks := Seq(compile in Compile)
+  
   )
 
-val lombok = "org.projectlombok" % "lombok" % "1.16.10"
-val cassandraExtras = "com.datastax.cassandra" % "cassandra-driver-extras" % "3.0.0"
 
 def elasticsearch: String = {
   val enableElasticsearch = sys.props.getOrElse("enableElasticsearch", default = "false")
@@ -225,12 +242,18 @@ def elasticsearch: String = {
   }
 }
 
-def commonSettings: Seq[Setting[_]] = eclipseSettings ++ Seq(
-  javacOptions in Compile ++= Seq("-encoding", "UTF-8", "-source", "1.8"),
-  javacOptions in(Compile, compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters")
+def commonSettings = Seq(
+  javacOptions in (Compile,compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters")
 )
 
-lagomCassandraCleanOnStart in ThisBuild := false
+def dockerSettings = Seq(
+  dockerUpdateLatest := true,
+  dockerBaseImage := "adoptopenjdk/openjdk8",
+  dockerUsername := sys.props.get("docker.username"),
+  dockerRepository := sys.props.get("docker.registry")
+)
+
+lagomCassandraCleanOnStart in ThisBuild := true
 
 // ------------------------------------------------------------------------------------------------
 

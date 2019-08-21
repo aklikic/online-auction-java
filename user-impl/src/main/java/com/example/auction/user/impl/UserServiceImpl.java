@@ -1,6 +1,5 @@
 package com.example.auction.user.impl;
 
-import akka.Done;
 import akka.NotUsed;
 import com.example.auction.pagination.PaginatedSequence;
 import com.example.auction.user.api.User;
@@ -11,6 +10,8 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
 
+    private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PersistentEntityRegistry registry;
     private static final Integer DEFAULT_PAGE_SIZE = 10;
     private final UserRepository userRepository;
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceCall<UserRegistration, User> createUser() {
         return user -> {
+            logger.debug("createUser :{}",user);
             UUID uuid = getUUIDFromEmail(user.getEmail());
             String password = PUserEntity.hashPassword(user.getPassword());
             PUser createdUser = new PUser(uuid, user.getName(), user.getEmail(), password);

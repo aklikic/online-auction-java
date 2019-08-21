@@ -12,8 +12,6 @@ import play.i18n.MessagesApi;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Http;
 import play.mvc.Result;
-import views.html.searchItem;
-import play.Configuration;
 
 import javax.inject.Inject;
 import java.util.Optional;
